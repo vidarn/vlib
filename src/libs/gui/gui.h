@@ -19,6 +19,8 @@ struct GuiContext
 struct GuiContext *gui_init(int font, struct GameData *data);
 void gui_begin_frame(struct GuiContext *gui, struct InputState input_state);
 void gui_draw(struct GuiContext *gui, struct RenderContext *context);
+
+
 void gui_fps_section(struct GuiContext *gui, struct GameData *data);
 struct Color gui_color_picker(struct Color col, struct GuiContext *gui,
     struct GameData *data);
