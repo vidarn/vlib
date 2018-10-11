@@ -37,16 +37,34 @@ struct GuiContext *gui_init(int font, struct GameData *data)
     return context;
 }
 
-void gui_begin_frame(struct GuiContext *gui, struct InputState input_state)
+void gui_begin_frame(struct GuiContext *gui, struct InputState input_state, struct GameData *data)
 {
     struct nk_context *ctx = &gui->ctx;
+
+    float mx = input_state.mouse_x*(float)reference_resolution;
+    float my = (1.f-input_state.mouse_y)*(float)reference_resolution;
+	float dx = input_state.delta_x*(float)reference_resolution;
+	float dy = input_state.delta_y*(float)reference_resolution;
+
     nk_input_begin(ctx);
-    int mx = (int)(input_state.mouse_x*(float)reference_resolution);
-    int my = (int)((1.f-input_state.mouse_y)*(float)reference_resolution);
-    nk_input_motion(ctx, mx, my);
+    //nk_input_motion(ctx, mx, my);
+    ctx->input.mouse.pos.x = mx;
+    ctx->input.mouse.pos.y = my;
+    ctx->input.mouse.delta.x = dx;
+	ctx->input.mouse.delta.y = dy;
+    ctx->input.mouse.prev.x = mx-dx;
+    ctx->input.mouse.prev.y = my-dy;
     nk_input_button(ctx, NK_BUTTON_LEFT, mx, my, input_state.mouse_down);
     //TODO(Vidar): Provide more input info
     nk_input_end(&gui->ctx);
+
+	if (ctx->input.mouse.grabbed) {
+		lock_cursor(data);
+	}
+	else {
+		unlock_cursor(data);
+	}
+
 }
 
 static float get_coord(short c)
