@@ -1,6 +1,7 @@
 #define NK_IMPLEMENTATION
 #include "gui.h"
 #include <stdio.h>
+#include "os/win32/key_codes.h"
 
 struct GuiFont {
     int font;
@@ -56,6 +57,21 @@ void gui_begin_frame(struct GuiContext *gui, struct InputState input_state, stru
     ctx->input.mouse.prev.y = my-dy;
     nk_input_button(ctx, NK_BUTTON_LEFT, mx, my, input_state.mouse_down);
     //TODO(Vidar): Provide more input info
+
+	for (int i = 0; i < input_state.num_keys_typed; i++) {
+		uint32_t key = input_state.keys_typed[i];
+		nk_input_unicode(ctx, key);
+	}
+	nk_input_key(ctx, NK_KEY_ENTER, is_key_down(KEY_RETURN));
+	nk_input_key(ctx, NK_KEY_BACKSPACE, is_key_down(KEY_BACKSPACE));
+	nk_input_key(ctx, NK_KEY_LEFT, is_key_down(KEY_LEFT));
+	nk_input_key(ctx, NK_KEY_RIGHT, is_key_down(KEY_RIGHT));
+	nk_input_key(ctx, NK_KEY_UP, is_key_down(KEY_UP));
+	nk_input_key(ctx, NK_KEY_DOWN, is_key_down(KEY_DOWN));
+	nk_input_key(ctx, NK_KEY_DEL, is_key_down(KEY_DELETE));
+	nk_input_key(ctx, NK_KEY_TAB, is_key_down(KEY_TAB));
+	nk_input_key(ctx, NK_KEY_TEXT_END, is_key_down(KEY_ESCAPE));
+
     nk_input_end(&gui->ctx);
 
 	if (ctx->input.mouse.grabbed) {
