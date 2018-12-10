@@ -50,3 +50,7 @@ void rng_shuffle(uint8_t *a, uint32_t n, uint32_t element_size,
         memcpy(a+j*element_size,tmp,element_size);
     }
 }
+
+//NOTE(Vidar):Compile pcg_basic.c as well...
+
+#include "pcg_basic.c"
