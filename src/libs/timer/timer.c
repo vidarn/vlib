@@ -1,18 +1,21 @@
 #include "timer.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
+
+#include <Windows.h>
 
 static uint64_t timer_get_tick()
 {
-	uint64_t t;
-	QueryPerformanceCounter(&t);
-	return t;
+	LARGE_INTEGER l;
+	QueryPerformanceCounter(&l);
+	return l.QuadPart;
 }
 static uint64_t timer_get_frequency()
 {
-	uint64_t t;
-	QueryPerformanceFrequency(&t);
-	return t;
+	LARGE_INTEGER l;
+	QueryPerformanceFrequency(&l);
+	return l.QuadPart;
 }
 
 
@@ -58,8 +61,8 @@ void timer_session_set_state(const char *state, struct TimerSession *timer_sessi
 			state_index = timer_session->num_states++;
 			if (timer_session->num_states > timer_session->alloc_states) {
 				timer_session->alloc_states *= 2;
-				timer_session->state_names = realloc(timer_session->state_names, timer_session->alloc_states, sizeof(const char*));
-				timer_session->state_ticks = realloc(timer_session->state_ticks, timer_session->alloc_states, sizeof(int));
+				timer_session->state_names = realloc(timer_session->state_names, timer_session->alloc_states* sizeof(const char*));
+				timer_session->state_ticks = realloc(timer_session->state_ticks, timer_session->alloc_states* sizeof(int));
 			}
 			timer_session->state_names[state_index] = strdup(state);
 			timer_session->state_ticks[state_index] = 0;
