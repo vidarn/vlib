@@ -17,7 +17,7 @@ struct GuiContext
 };
 
 struct GuiContext *gui_init(int font, struct GameData *data);
-void gui_begin_frame(struct GuiContext *gui, struct InputState input_state);
+void gui_begin_frame(struct GuiContext *gui, struct InputState input_state, struct GameData *data);
 void gui_draw(struct GuiContext *gui, struct RenderContext *context);
 
 
