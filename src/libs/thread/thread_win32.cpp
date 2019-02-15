@@ -49,3 +49,9 @@ void thread_semaphore_wait(struct Semaphore *sem)
 {
     WaitForSingleObject(sem->handle,INFINITE);
 }
+
+extern "C"
+long thread_atomic_increment(long volatile *i)
+{
+	return InterlockedIncrement(i) -1;
+}
