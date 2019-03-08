@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include "os/win32/key_codes.h"
 
+//TODO(Vidar):This is only for the definition of SATIN_SHADER_SUFFIX
+#include "vn_gl.h"
+
 struct GuiFont {
     int font;
     struct GuiContext *context;
@@ -30,10 +33,10 @@ struct GuiContext *gui_init(int font, struct GameData *data)
     nk_font->width = gui_text_width;
     nk_init_default(ctx, nk_font);
     
-    context->rect_shader = load_shader("gui", "gui_rect", data);
-    context->circle_shader = load_shader("gui", "gui_circle", data);
-    context->triangle_shader = load_shader("gui", "gui_triangle", data);
-    context->color_rect_shader = load_shader("gui", "gui_color_rect", data);
+    context->rect_shader = load_shader("gui" SATIN_SHADER_SUFFIX, "gui_rect" SATIN_SHADER_SUFFIX, data);
+    context->circle_shader = load_shader("gui" SATIN_SHADER_SUFFIX, "gui_circle" SATIN_SHADER_SUFFIX, data);
+    context->triangle_shader = load_shader("gui" SATIN_SHADER_SUFFIX, "gui_triangle" SATIN_SHADER_SUFFIX, data);
+    context->color_rect_shader = load_shader("gui" SATIN_SHADER_SUFFIX, "gui_color_rect" SATIN_SHADER_SUFFIX, data);
     
     return context;
 }
