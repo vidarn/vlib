@@ -15,8 +15,6 @@ void timer_session_print(struct TimerSession *timer_session)
 ;
 
 //Global timer session for convenience
-struct TimerSession *timer_session_create_g(void)
-;
 void timer_session_set_state_g(const char *state)
 ;
 void timer_session_pause_g(void)

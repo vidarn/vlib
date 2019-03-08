@@ -3,20 +3,34 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef WIN32
 #include <Windows.h>
-
 static uint64_t timer_get_tick()
 {
 	LARGE_INTEGER l;
 	QueryPerformanceCounter(&l);
 	return l.QuadPart;
 }
+// The current performance-counter frequency, in counts per second
 static uint64_t timer_get_frequency()
 {
 	LARGE_INTEGER l;
 	QueryPerformanceFrequency(&l);
 	return l.QuadPart;
 }
+#else
+#include <time.h>
+static uint64_t timer_get_tick()
+{
+	struct timespec time;
+	clock_gettime(CLOCK_REALTIME, &time);
+	return time.tv_sec * (uint64_t)1000000000L + time.tv_nsec;
+}
+static uint64_t timer_get_frequency()
+{
+	return (uint64_t)1000000000L ;
+}
+#endif
 
 
 struct TimerSession {
