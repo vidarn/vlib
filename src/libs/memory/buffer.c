@@ -14,10 +14,18 @@ struct Buffer *buffer_create(size_t initial_size)
 	buffer->mem = calloc(1, initial_size);
 	return buffer;
 }
+
 void buffer_free(struct Buffer *buffer)
 {
 	free(buffer->mem);
 	free(buffer);
+}
+
+void *buffer_hand_over_memory(struct Buffer *buffer)
+{
+	void *mem = buffer->mem;
+	free(buffer);
+	return mem;
 }
 
 void buffer_reset(struct Buffer *buffer)

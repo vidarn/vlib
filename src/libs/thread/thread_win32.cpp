@@ -19,8 +19,10 @@ struct ThreadHandle *thread_start(unsigned long (*func)(void *),void *param)
 extern "C"
 void thread_wait(struct ThreadHandle *handle)
 {
-    WaitForSingleObject(handle->handle,INFINITE);
-    delete handle;
+	if (handle) {
+		WaitForSingleObject(handle->handle, INFINITE);
+		delete handle;
+	}
 }
 
 extern "C"
