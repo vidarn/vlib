@@ -988,6 +988,11 @@ struct Vec3 normalize_vec3(struct Vec3 v)
     return v;
 }
 
+float magnitude_vec3(struct Vec3 v)
+{
+    return sqrtf(v.x*v.x + v.y*v.y + v.z*v.z);
+}
+
 struct Vec2 transform_vector(struct Vec2 p, struct Vec2 x_axis, struct Vec2 y_axis)
 {
     struct Vec2 ret = {0};

@@ -93,6 +93,7 @@ void print_matrix4(struct Matrix4);
 
 struct Vec3 vec3(float x, float y, float z);
 struct Vec3 normalize_vec3(struct Vec3);
+float magnitude_vec3(struct Vec3 v);
 
 struct Vec2{
     float x,y;
