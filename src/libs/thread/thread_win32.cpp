@@ -57,3 +57,9 @@ long thread_atomic_increment(long volatile *i)
 {
 	return InterlockedIncrement(i) -1;
 }
+
+extern "C"
+void *thread_atomic_compare_and_swap_ptr(void * volatile *dest, void *val, void *cmp)
+{
+	return InterlockedCompareExchangePointer(dest, val, cmp);
+}
