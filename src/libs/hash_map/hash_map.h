@@ -11,6 +11,10 @@ void hash_map_insert(struct HashMap *hash_map, void *key, unsigned int key_size,
 ;
 void *hash_map_find(struct HashMap *hash_map, void *key, unsigned int key_size, unsigned int *value_size_out)
 ;
+int hash_map_remove(struct HashMap *hash_map, void *key, unsigned int key_size)
+;
+void hash_map_clear(struct HashMap *hash_map)
+;
 
 struct HashMapIterator *hash_map_iterator_create(struct HashMap *hash_map)
 ;

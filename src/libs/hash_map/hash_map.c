@@ -120,6 +120,70 @@ void *hash_map_find(struct HashMap *hash_map, void *key, unsigned int key_size, 
 	return 0;
 }
 
+int hash_map_remove(struct HashMap *hash_map, void *key, unsigned int key_size)
+{
+	unsigned long hash = hash_djb2(key, key_size);
+	unsigned int bucket_i = hash % hash_map->num_buckets;
+	struct HashMapBucket *bucket = hash_map->buckets + bucket_i;
+	int num_entries = bucket->num;
+	int key_offset = 0;
+	int value_offset = 0;
+	int entry = -1;
+	for (int i = 0; i < num_entries; i++) {
+		unsigned int ks = bucket->key_sizes[i];
+		unsigned int vs =  bucket->value_sizes[i];
+		if (ks == key_size) {
+			unsigned char *k = bucket->keys + key_offset;
+			if (memcmp(key, k, key_size) == 0) {
+				entry = i;
+			}
+		}
+		key_offset   += ks;
+		value_offset += vs;
+	}
+	if (entry != -1) {
+		unsigned char *k_tmp = _alloca(bucket->key_size);
+		unsigned char *v_tmp = _alloca(bucket->value_size);
+		memcpy(k_tmp, bucket->keys, bucket->key_size);
+		memcpy(v_tmp, bucket->values, bucket->value_size);
+		int key_offset_tmp = 0;
+		int value_offset_tmp = 0;
+		int key_offset = 0;
+		int value_offset = 0;
+		for (int i = 0; i < num_entries; i++) {
+			unsigned int ks = bucket->key_sizes[i];
+			unsigned int vs = bucket->value_sizes[i];
+			if (i != entry) {
+				memcpy(bucket->keys + key_offset, k_tmp + key_offset_tmp, ks);
+				memcpy(bucket->values + value_offset, v_tmp + value_offset_tmp, vs);
+				key_offset += ks;
+				value_offset += vs;
+			}
+			key_offset_tmp   += ks;
+			value_offset_tmp += vs;
+		}
+		bucket->key_size -= bucket->key_sizes[entry];
+		bucket->value_size -= bucket->value_sizes[entry];
+		for (int i = entry+1; i < num_entries; i++) {
+			bucket->key_sizes[i-1] = bucket->key_sizes[i];
+			bucket->value_sizes[i-1] = bucket->value_sizes[i];
+		}
+		bucket->num--;
+		return 1;
+	}
+	return 0;
+}
+
+void hash_map_clear(struct HashMap *hash_map)
+{
+	for (int i_bucket = 0; i_bucket < hash_map->num_buckets; i_bucket++)
+	{
+		struct HashMapBucket *bucket = hash_map->buckets + i_bucket;
+		bucket->num = 0;
+		bucket->key_size = 0;
+		bucket->value_size = 0;
+	}
+}
 
 struct HashMapIterator *hash_map_iterator_create(struct HashMap *hash_map)
 {
