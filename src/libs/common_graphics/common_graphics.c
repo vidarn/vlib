@@ -1,4 +1,5 @@
 #include "common_graphics.h"
+#include <math.h>
 
 float smootherstep(float edge0, float edge1, float x)
 {
@@ -23,4 +24,24 @@ float clamp(float x, float lowerlimit, float upperlimit)
 	if (x > upperlimit)
 		x = upperlimit;
 	return x;
+}
+
+float srgb_to_linear(float srgb)
+{
+	if (srgb < 0.04045f) {
+		return srgb * (1.f / 12.92f);
+	}
+	else {
+		return powf((srgb + 0.055f) / 1.055f, 2.4f);
+	}
+}
+
+float linear_to_srgb(float linear)
+{
+	if (linear < 0.0031308) {
+		return linear * 12.92f;
+	}
+	else {
+		return 1.055f*powf(linear, 1.f / 2.4f) - 0.055f;
+	}
 }
