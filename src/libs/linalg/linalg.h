@@ -119,6 +119,7 @@ float dot_vec2(struct Vec2 a, struct Vec2 b);
 
 struct Vec3 multiply_vec3_matrix3(struct Vec3 v,struct Matrix3 m);
 struct Vec3 multiply_matrix3_vec3(struct Matrix3 m,struct Vec3 v);
+struct Vec3 multiply_vec3_matrix4(struct Vec3 v, struct Matrix4 m);
 struct Vec3 multiply_matrix4_vec3(struct Matrix4 m,struct Vec3 v);
 struct Vec3 multiply_matrix4_vec3_point(struct Matrix4 m,struct Vec3 v);
 struct Vec3 add_vec3(struct Vec3 a, struct Vec3 b);

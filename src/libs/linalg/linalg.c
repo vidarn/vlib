@@ -1093,6 +1093,17 @@ struct Vec3 multiply_matrix3_vec3(struct Matrix3 m,struct Vec3 v)
     return ret;
 }
 
+struct Vec3 multiply_vec3_matrix4(struct Vec3 v, struct Matrix4 m)
+{
+    struct Vec3 ret = {0};
+    for(int i=0;i<3;i++){
+        for(int j=0;j<3;j++){
+            ret.m[i]+=M4(m,j,i)*v.m[j];
+        }
+    }
+    return ret;
+}
+
 struct Vec3 multiply_matrix4_vec3(struct Matrix4 m,struct Vec3 v)
 {
     struct Vec3 ret = {0};
