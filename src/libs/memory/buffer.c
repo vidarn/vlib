@@ -47,6 +47,11 @@ void buffer_add(void *ptr, size_t len, struct Buffer *buffer)
 	buffer->len += len;
 }
 
+void buffer_shrink(size_t len, struct Buffer *buffer)
+{
+	buffer->len -= len;
+}
+
 void *buffer_get(size_t len, struct Buffer *buffer)
 {
 	int resize = 0;
