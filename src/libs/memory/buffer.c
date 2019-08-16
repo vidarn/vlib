@@ -4,7 +4,7 @@
 struct Buffer
 {
 	unsigned char *mem;
-	int len, alloc;
+	size_t len, alloc;
 };
 
 struct Buffer *buffer_create(size_t initial_size)
