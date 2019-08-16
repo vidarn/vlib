@@ -374,6 +374,24 @@ struct Matrix3 get_rotation_matrix3(float x,float y,float z)
     return multiply_matrix3(tmp, rot_z);
 }
 
+struct Matrix3 invert_homogeneous_matrix3(struct Matrix3 mat)
+{
+	float r11 = mat.m[0];
+	float r21 = mat.m[1];
+	float r12 = mat.m[3];
+	float r22 = mat.m[4];
+	float t1 = mat.m[6];
+	float t2 = mat.m[7];
+	float s1_sq = r11*r11 + r21 * r21;
+	float s2_sq = r12*r12 + r22 * r22;
+	struct Matrix3 ret = {
+		r11/s1_sq, r12/s1_sq, 0.f,
+		r21/s2_sq, r22/s2_sq, 0.f,
+		-(t1*r11/s1_sq + t2*r21/s2_sq), -(t1*r12/s1_sq + t2*r22/s2_sq), 1.f
+	};
+	return ret;
+}
+
 struct Matrix3 lu_decompose_matrix3(struct Matrix3 A)
 {
     struct Matrix3 L = {0};
@@ -1051,6 +1069,17 @@ struct Vec2 scale_vec2(float s, struct Vec2 a)
 float dot_vec2(struct Vec2 a, struct Vec2 b)
 {
     return a.x*b.x + a.y*b.y;
+}
+
+struct Vec3 multiply_vec3_matrix3(struct Vec3 v,struct Matrix3 m)
+{
+    struct Vec3 ret = {0};
+    for(int i=0;i<3;i++){
+        for(int j=0;j<3;j++){
+            ret.m[i]+=M3(m,j,i)*v.m[j];
+        }
+    }
+    return ret;
 }
 
 struct Vec3 multiply_matrix3_vec3(struct Matrix3 m,struct Vec3 v)
