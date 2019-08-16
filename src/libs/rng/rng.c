@@ -24,6 +24,11 @@ struct RNGState *rng_clone_state(struct RNGState *state)
     ret->r = state->r;
     return ret;
 }
+
+void rng_seed(struct RNGState* state, uint64_t seed1, uint64_t seed2)
+{
+    pcg32_srandom_r(&state->r, seed1, seed2);
+}
     
 uint32_t rng_uniform(struct RNGState *state)
 {

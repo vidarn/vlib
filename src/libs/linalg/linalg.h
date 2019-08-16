@@ -33,6 +33,10 @@ void matrix_eigen_2x2(struct Matrix A, struct Matrix v1, struct Matrix v2,
 // [ 0  1  2]
 // [ 3  4  5]
 // [ 6  7  8]
+//  NOTE(Vidar):Or should it be like this??
+// [ 0  3  6]
+// [ 1  4  7]
+// [ 2  5  8]
 struct ALIGNED_(32) Matrix3 {
     float m[9];
 };
@@ -60,6 +64,7 @@ struct Vec4{
 
 struct Matrix3 multiply_matrix3(struct Matrix3 a, struct Matrix3 b);
 struct Matrix3 get_rotation_matrix3(float x,float y,float z);
+struct Matrix3 invert_homogeneous_matrix3(struct Matrix3 mat);
 struct Matrix3 lu_decompose_matrix3(struct Matrix3 mat);
 struct Matrix3 get_translation_matrix3(float x,float y);
 struct Matrix3 get_scale_matrix3(float s);
@@ -112,7 +117,9 @@ struct Vec2 sub_vec2(struct Vec2 a, struct Vec2 b);
 struct Vec2 scale_vec2(float s, struct Vec2 a);
 float dot_vec2(struct Vec2 a, struct Vec2 b);
 
+struct Vec3 multiply_vec3_matrix3(struct Vec3 v,struct Matrix3 m);
 struct Vec3 multiply_matrix3_vec3(struct Matrix3 m,struct Vec3 v);
+struct Vec3 multiply_vec3_matrix4(struct Vec3 v, struct Matrix4 m);
 struct Vec3 multiply_matrix4_vec3(struct Matrix4 m,struct Vec3 v);
 struct Vec3 multiply_matrix4_vec3_point(struct Matrix4 m,struct Vec3 v);
 struct Vec3 add_vec3(struct Vec3 a, struct Vec3 b);
