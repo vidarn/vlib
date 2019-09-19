@@ -1,9 +1,10 @@
 #include <stdlib.h>
+#include <string.h>
 
 struct Buffer
 {
 	unsigned char *mem;
-	int len, alloc;
+	size_t len, alloc;
 };
 
 struct Buffer *buffer_create(size_t initial_size)
@@ -13,10 +14,18 @@ struct Buffer *buffer_create(size_t initial_size)
 	buffer->mem = calloc(1, initial_size);
 	return buffer;
 }
+
 void buffer_free(struct Buffer *buffer)
 {
 	free(buffer->mem);
 	free(buffer);
+}
+
+void *buffer_hand_over_memory(struct Buffer *buffer)
+{
+	void *mem = buffer->mem;
+	free(buffer);
+	return mem;
 }
 
 void buffer_reset(struct Buffer *buffer)
@@ -36,6 +45,11 @@ void buffer_add(void *ptr, size_t len, struct Buffer *buffer)
 	}
 	memcpy(buffer->mem + buffer->len, ptr, len);
 	buffer->len += len;
+}
+
+void buffer_shrink(size_t len, struct Buffer *buffer)
+{
+	buffer->len -= len;
 }
 
 void *buffer_get(size_t len, struct Buffer *buffer)

@@ -19,8 +19,10 @@ struct ThreadHandle *thread_start(unsigned long (*func)(void *),void *param)
 extern "C"
 void thread_wait(struct ThreadHandle *handle)
 {
-    WaitForSingleObject(handle->handle,INFINITE);
-    delete handle;
+	if (handle) {
+		WaitForSingleObject(handle->handle, INFINITE);
+		delete handle;
+	}
 }
 
 extern "C"
@@ -54,4 +56,10 @@ extern "C"
 long thread_atomic_increment(long volatile *i)
 {
 	return InterlockedIncrement(i) -1;
+}
+
+extern "C"
+void *thread_atomic_compare_and_swap_ptr(void * volatile *dest, void *val, void *cmp)
+{
+	return InterlockedCompareExchangePointer(dest, val, cmp);
 }

@@ -3,20 +3,34 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef WIN32
 #include <Windows.h>
-
 static uint64_t timer_get_tick()
 {
 	LARGE_INTEGER l;
 	QueryPerformanceCounter(&l);
 	return l.QuadPart;
 }
+// The current performance-counter frequency, in counts per second
 static uint64_t timer_get_frequency()
 {
 	LARGE_INTEGER l;
 	QueryPerformanceFrequency(&l);
 	return l.QuadPart;
 }
+#else
+#include <time.h>
+static uint64_t timer_get_tick()
+{
+	struct timespec time;
+	clock_gettime(CLOCK_REALTIME, &time);
+	return time.tv_sec * (uint64_t)1000000000L + time.tv_nsec;
+}
+static uint64_t timer_get_frequency()
+{
+	return (uint64_t)1000000000L ;
+}
+#endif
 
 
 struct TimerSession {
@@ -78,6 +92,12 @@ void timer_session_pause(struct TimerSession *timer_session)
 	timer_session_set_state(0, timer_session);
 }
 
+void timer_session_clear(struct TimerSession *timer_session)
+{
+	timer_session->num_states = 0;
+	timer_session->current_state = -1;
+}
+
 void timer_session_summary(void (*timer_session_summary_callback)(const char*, uint64_t, uint64_t, uint64_t),
 	struct TimerSession *timer_session)
 {
@@ -96,7 +116,8 @@ void timer_session_summary(void (*timer_session_summary_callback)(const char*, u
 static void timer_session_summary_print_callback(const char *state, uint64_t ticks, uint64_t frequency, uint64_t total_ticks)
 {
 	float percent = (float)(100.0*(double)ticks / (double)total_ticks);
-	printf("%s: %g%%\n", state, percent);
+	float ms = (float)((double)ticks * 1000.f / (double)frequency);
+	printf("%s:\t%g%%\t(%gms)\n", state, percent, ms);
 }
 
 void timer_session_print(struct TimerSession *timer_session)
@@ -113,6 +134,10 @@ void timer_session_set_state_g(const char *state)
 void timer_session_pause_g()
 {
 	timer_session_pause(&g_timer_session);
+}
+void timer_session_clear_g()
+{
+	timer_session_clear(&g_timer_session);
 }
 void timer_session_summary_g(void(*timer_session_summary_callback)(const char*, uint64_t, uint64_t, uint64_t))
 {

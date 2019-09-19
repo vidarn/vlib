@@ -17,4 +17,7 @@ void thread_semaphore_post(struct Semaphore *sem);
 void thread_semaphore_wait(struct Semaphore *sem);
 
 
-long thread_atomic_increment(long volatile *i);
+long thread_atomic_increment(long volatile *i)
+;
+void *thread_atomic_compare_and_swap_ptr(void * volatile *dest, void *val, void *cmp)
+;
