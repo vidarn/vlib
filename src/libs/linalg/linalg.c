@@ -844,6 +844,20 @@ struct Matrix4 get_scale_matrix4(float s)
     return ret;
 }
 
+struct Matrix4 get_scale_matrix4_non_uniform(float x, float y, float z)
+{
+    struct Matrix4 ret;
+    float proj[4][4]=
+    {
+        {x  , 0.f,0.f, 0.f},
+        {0.f, y  , 0.f, 0.f},
+        {0.f, 0.f, z  , 0.f},
+        {0.f, 0.f, 0.f, 1.0f},
+    };
+    memcpy(ret.m,proj,16*sizeof(float));
+    return ret;
+}
+
 struct Matrix4 get_identity_matrix4(void)
 {
     struct Matrix4 ret;

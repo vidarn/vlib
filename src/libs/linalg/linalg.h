@@ -84,6 +84,7 @@ struct Matrix4 get_orthographic_matrix4(float scale,float n,float f);
 struct Matrix4 get_translation_matrix4(float x,float y,float z);
 struct Matrix4 get_rotation_matrix4(float x, float y, float z);
 struct Matrix4 get_scale_matrix4(float s);
+struct Matrix4 get_scale_matrix4_non_uniform(float x, float y, float z);
 struct Matrix4 get_identity_matrix4(void);
 struct Matrix4 transpose_matrix4(struct Matrix4);
 struct Matrix4 invert_matrix4_noscale(struct Matrix4 mat);
