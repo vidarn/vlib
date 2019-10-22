@@ -777,10 +777,10 @@ struct Matrix4 get_orthographic_matrix4(float scale,float n,float f)
     struct Matrix4 ret;
     float proj[4][4]=
     {
-        {1.f/scale,0.f,0.f,0.0f},
-        {0.f, 1.f/scale, 0.f, 0.0f},
-        {0.0f, 0.f, -2.f/(f-n), -(f+n)/(f-n)},
-        {0.0f, 0.0f, 0.0f, 1.0f},
+        {2.f/scale,0.f,0.f,0.0f},
+        {0.f, 2.f/scale, 0.f, 0.0f},
+		{0.0f, 0.f, -2.f / (f - n), 0.0f},
+        {0.0f, 0.0f,  -(f+n)/(f-n), 1.0f},
     };
     memcpy(ret.m,proj,16*sizeof(float));
     return ret;
