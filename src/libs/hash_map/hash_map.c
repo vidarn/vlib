@@ -185,6 +185,18 @@ void hash_map_clear(struct HashMap *hash_map)
 	}
 }
 
+int hash_map_num_keys(struct HashMap* hash_map)
+{
+	int num = 0;
+	for (int i_bucket = 0; i_bucket < hash_map->num_buckets; i_bucket++)
+	{
+		struct HashMapBucket* bucket = hash_map->buckets + i_bucket;
+		num += bucket->num;
+	}
+	return num;
+	
+}
+
 struct HashMapIterator *hash_map_iterator_create(struct HashMap *hash_map)
 {
 	struct HashMapIterator *hash_map_iterator = calloc(1, sizeof(struct HashMapIterator));

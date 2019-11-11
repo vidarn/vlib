@@ -2,6 +2,10 @@
 
 struct HashMap;
 
+//NOTE(Vidar):This is the hash function used
+unsigned long hash_djb2(unsigned char* key, unsigned int key_size)
+;
+
 // You want num_buckets to be ~ 1.5*the number of entries 
 struct HashMap *hash_map_create(int num_buckets)
 ;
@@ -14,6 +18,8 @@ void *hash_map_find(struct HashMap *hash_map, void *key, unsigned int key_size, 
 int hash_map_remove(struct HashMap *hash_map, void *key, unsigned int key_size)
 ;
 void hash_map_clear(struct HashMap *hash_map)
+;
+int hash_map_num_keys(struct HashMap *hash_map)
 ;
 
 struct HashMapIterator *hash_map_iterator_create(struct HashMap *hash_map)
