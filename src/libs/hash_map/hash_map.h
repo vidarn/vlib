@@ -1,9 +1,13 @@
 #pragma once
+#include <stdint.h>
 
 struct HashMap;
 
 //NOTE(Vidar):This is the hash function used
 unsigned long hash_djb2(unsigned char* key, unsigned int key_size)
+;
+
+uint32_t hash_murmur3_32(const uint8_t* key, size_t key_size, uint32_t seed)
 ;
 
 // You want num_buckets to be ~ 1.5*the number of entries 
