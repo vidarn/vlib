@@ -9,3 +9,11 @@ float srgb_to_linear(float srgb)
 ;
 float linear_to_srgb(float linear)
 ;
+void rgb_to_hsv(float* hsv, const float* rgb)
+;
+void hsv_to_rgb(float* rgb, const float* hsv)
+;
+void rgb_to_hsl(float* hsl, const float* rgb)
+;
+void hsl_to_rgb(float* rgb, const float* hsl)
+;
