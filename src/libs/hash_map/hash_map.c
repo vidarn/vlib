@@ -160,27 +160,9 @@ void *hash_map_find(struct HashMap *hash_map, void *key, unsigned int key_size, 
 	return 0;
 }
 
-int hash_map_remove(struct HashMap *hash_map, void *key, unsigned int key_size)
+static int _hash_map_bucket_remove_entry(struct HashMapBucket* bucket, int entry)
 {
-	unsigned long hash = hash_djb2(key, key_size);
-	unsigned int bucket_i = hash % hash_map->num_buckets;
-	struct HashMapBucket *bucket = hash_map->buckets + bucket_i;
 	int num_entries = bucket->num;
-	int key_offset = 0;
-	int value_offset = 0;
-	int entry = -1;
-	for (int i = 0; i < num_entries; i++) {
-		unsigned int ks = bucket->key_sizes[i];
-		unsigned int vs =  bucket->value_sizes[i];
-		if (ks == key_size) {
-			unsigned char *k = bucket->keys + key_offset;
-			if (memcmp(key, k, key_size) == 0) {
-				entry = i;
-			}
-		}
-		key_offset   += ks;
-		value_offset += vs;
-	}
 	if (entry != -1) {
 		unsigned char *k_tmp = _alloca(bucket->key_size);
 		unsigned char *v_tmp = _alloca(bucket->value_size);
@@ -212,6 +194,30 @@ int hash_map_remove(struct HashMap *hash_map, void *key, unsigned int key_size)
 		return 1;
 	}
 	return 0;
+}
+
+int hash_map_remove(struct HashMap *hash_map, void *key, unsigned int key_size)
+{
+	unsigned long hash = hash_djb2(key, key_size);
+	unsigned int bucket_i = hash % hash_map->num_buckets;
+	struct HashMapBucket *bucket = hash_map->buckets + bucket_i;
+	int num_entries = bucket->num;
+	int key_offset = 0;
+	int value_offset = 0;
+	int entry = -1;
+	for (int i = 0; i < num_entries; i++) {
+		unsigned int ks = bucket->key_sizes[i];
+		unsigned int vs =  bucket->value_sizes[i];
+		if (ks == key_size) {
+			unsigned char *k = bucket->keys + key_offset;
+			if (memcmp(key, k, key_size) == 0) {
+				entry = i;
+			}
+		}
+		key_offset   += ks;
+		value_offset += vs;
+	}
+	return _hash_map_bucket_remove_entry(bucket, entry);
 }
 
 void hash_map_clear(struct HashMap *hash_map)
@@ -283,6 +289,22 @@ int hash_map_iterator_next(struct HashMapIterator *hash_map_iterator, void **key
 	hash_map_iterator->next_bucket_entry = i_bucket_entry+1;
 
 	return 1;
+}
+
+void hash_map_iterator_remove_current(struct HashMapIterator* hash_map_iterator)
+{
+	int remove_bucket;
+	int remove_entry;
+	if(hash_map_iterator->next_bucket_entry==0){
+		remove_bucket = hash_map_iterator->next_bucket - 1;
+		remove_entry = hash_map_iterator->hash_map->buckets[remove_bucket].num-1;
+	}
+	else {
+		hash_map_iterator->next_bucket_entry--;
+		remove_bucket = hash_map_iterator->next_bucket;
+		remove_entry = hash_map_iterator->next_bucket_entry;
+	}
+	_hash_map_bucket_remove_entry(hash_map_iterator->hash_map->buckets + remove_bucket, remove_entry);
 }
 
 void hash_map_iterator_free(struct HashMapIterator *hash_map_iterator)
