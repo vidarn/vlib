@@ -35,6 +35,42 @@ void merge_sort(float *a, float *b, int n)
     }
 }
 
+static void merge_custom(char *a, int i1, int i2, int i3, char *b,
+    int stride, int compar(void *a, void *b, void *data), void *data)
+{
+    int i = i1;
+    int j = i2;
+    for(int k=i1; k < i3; k++){
+        if(i < i2 && (j >= i3 || compar(a+i*stride,a+j*stride, data))){
+            memcpy(b+k*stride,a+i*stride,stride);
+            i++;
+        }else{
+            memcpy(b+k*stride,a+j*stride,stride);
+            j++;
+        }
+    }
+}
+
+void merge_sort_custom(void *a, void *b, int stride, int n, int compar(void *a, void *b, void *data), void *data)
+{
+    void *original_a = a;
+    for(int width = 1; width < n; width *= 2){
+        for(int i=0; i<n; i += width*2){
+            int i1 = i;
+            int i2 = i+width < n ? i+width : n;
+            int i3 = i+2*width < n ? i+2*width : n;
+            merge_custom(a, i1, i2, i3, b, stride, compar, data);
+        }
+        void *tmp =a;
+        a = b;
+        b = tmp;
+    }
+    if(a != original_a){
+        memcpy(original_a,a,n*stride);
+    }
+}
+
+
 static void merge_auxillary(float *a, int i1, int i2, int i3, float *b,
     int *aux_a, int *aux_b)
 {
