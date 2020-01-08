@@ -11,7 +11,7 @@ struct MMapContext
 struct MMapContext *mmap_file_read(const char *filename)
 {
 	HANDLE file_handle = CreateFileA(filename, GENERIC_READ, FILE_SHARE_READ,
-		NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+		NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (file_handle == INVALID_HANDLE_VALUE) {
 		return 0;
 	}
