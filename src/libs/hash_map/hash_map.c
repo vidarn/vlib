@@ -1,22 +1,24 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include "hash_map.h"
 
 struct HashMapBucket
 {
-	unsigned int alloc, num;
-	unsigned int key_alloc, key_size;
-	unsigned int value_alloc, value_size;
 	unsigned int  *key_sizes;
 	unsigned int  *value_sizes;
 	unsigned char *keys;
 	unsigned char *values;
+	unsigned int alloc, num;
+	unsigned int key_alloc, key_size;
+	unsigned int value_alloc, value_size;
 };
 
 struct HashMap
 {
-	int num_buckets;
 	struct HashMapBucket *buckets;
+	int num_buckets;
+	int num_keys;
 };
 
 struct HashMapIterator
@@ -128,6 +130,16 @@ void hash_map_insert(struct HashMap *hash_map, void *key, unsigned int key_size,
 		bucket->values = realloc(bucket->values, bucket->value_alloc);
 	}
 	memcpy(bucket->values + value_offset, value, value_size);
+	hash_map->num_keys++;
+}
+
+void hash_map_insert_and_grow(struct HashMap* hash_map, void* key, unsigned int key_size, void* value, unsigned int value_size)
+{
+	int num_keys = hash_map->num_keys;
+	if (hash_map->num_buckets <= hash_map->num_keys) {
+		hash_map_resize(hash_map, hash_map->num_buckets * 2);
+	}
+	hash_map_insert(hash_map, key, key_size, value, value_size);
 }
 
 void *hash_map_find(struct HashMap *hash_map, void *key, unsigned int key_size, unsigned int *value_size_out)
@@ -217,7 +229,11 @@ int hash_map_remove(struct HashMap *hash_map, void *key, unsigned int key_size)
 		key_offset   += ks;
 		value_offset += vs;
 	}
-	return _hash_map_bucket_remove_entry(bucket, entry);
+	int ret = _hash_map_bucket_remove_entry(bucket, entry);
+	if (ret) {
+		hash_map->num_keys--;
+	}
+	return ret;
 }
 
 void hash_map_clear(struct HashMap *hash_map)
@@ -229,10 +245,13 @@ void hash_map_clear(struct HashMap *hash_map)
 		bucket->key_size = 0;
 		bucket->value_size = 0;
 	}
+	hash_map->num_keys = 0;
 }
 
 int hash_map_num_keys(struct HashMap* hash_map)
 {
+	return hash_map->num_keys;
+	/*
 	int num = 0;
 	for (int i_bucket = 0; i_bucket < hash_map->num_buckets; i_bucket++)
 	{
@@ -240,7 +259,33 @@ int hash_map_num_keys(struct HashMap* hash_map)
 		num += bucket->num;
 	}
 	return num;
-	
+	*/
+}
+
+void hash_map_resize(struct HashMap* hash_map, int num_buckets)
+{
+	struct HashMapBucket *new_buckets = calloc(num_buckets, sizeof(struct HashMapBucket));
+	struct HashMapBucket *old_buckets = hash_map->buckets;
+	int old_num_buckets = hash_map->num_buckets;
+	hash_map->buckets = new_buckets;
+	hash_map->num_buckets = num_buckets;
+	hash_map->num_keys = 0;
+
+	for (int i_bucket = 0; i_bucket < old_num_buckets; i_bucket++) {
+		struct HashMapBucket* bucket = old_buckets + i_bucket;
+		int num_entries = bucket->num;
+		unsigned char* key = bucket->keys;
+		unsigned char* value = bucket->values;
+		for (int i = 0; i < num_entries; i++) {
+			uint32_t key_size = bucket->key_sizes[i];
+			uint32_t value_size = bucket->value_sizes[i];
+			hash_map_insert(hash_map, key, key_size, value, value_size);
+			key += key_size;
+			value += value_size;
+		}
+	}
+
+	free(old_buckets);
 }
 
 struct HashMapIterator *hash_map_iterator_create(struct HashMap *hash_map)
@@ -304,7 +349,9 @@ void hash_map_iterator_remove_current(struct HashMapIterator* hash_map_iterator)
 		remove_bucket = hash_map_iterator->next_bucket;
 		remove_entry = hash_map_iterator->next_bucket_entry;
 	}
-	_hash_map_bucket_remove_entry(hash_map_iterator->hash_map->buckets + remove_bucket, remove_entry);
+	if (_hash_map_bucket_remove_entry(hash_map_iterator->hash_map->buckets + remove_bucket, remove_entry)) {
+		hash_map_iterator->hash_map->num_keys--;
+	}
 }
 
 void hash_map_iterator_free(struct HashMapIterator *hash_map_iterator)
