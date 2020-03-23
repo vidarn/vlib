@@ -176,8 +176,8 @@ static int _hash_map_bucket_remove_entry(struct HashMapBucket* bucket, int entry
 {
 	int num_entries = bucket->num;
 	if (entry != -1) {
-		unsigned char *k_tmp = _alloca(bucket->key_size);
-		unsigned char *v_tmp = _alloca(bucket->value_size);
+		unsigned char *k_tmp = alloca(bucket->key_size);
+		unsigned char *v_tmp = alloca(bucket->value_size);
 		memcpy(k_tmp, bucket->keys, bucket->key_size);
 		memcpy(v_tmp, bucket->values, bucket->value_size);
 		int key_offset_tmp = 0;
