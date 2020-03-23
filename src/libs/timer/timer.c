@@ -102,10 +102,7 @@ void timer_session_summary(void (*timer_session_summary_callback)(const char*, u
 	struct TimerSession *timer_session)
 {
 	timer_session_pause(timer_session);
-	uint64_t total_ticks = 0;
-	for (int i = 0; i < timer_session->num_states; i++) {
-		total_ticks += timer_session->state_ticks[i];
-	}
+	uint64_t total_ticks = timer_session_get_total_ticks(timer_session);
 	uint64_t freq = timer_get_frequency();
 	for (int i = 0; i < timer_session->num_states; i++) {
 		timer_session_summary_callback(timer_session->state_names[i], timer_session->state_ticks[i],
@@ -123,6 +120,19 @@ static void timer_session_summary_print_callback(const char *state, uint64_t tic
 void timer_session_print(struct TimerSession *timer_session)
 {
 	timer_session_summary(timer_session_summary_print_callback, timer_session);
+}
+
+uint64_t timer_session_get_total_ticks(struct TimerSession *timer_session)
+{
+	uint64_t total_ticks = 0;
+	for (int i = 0; i < timer_session->num_states; i++) {
+		total_ticks += timer_session->state_ticks[i];
+	}
+    return total_ticks;
+}
+uint64_t timer_session_get_frequency(struct TimerSession *timer_session)
+{
+    return timer_get_frequency();
 }
 
 static struct TimerSession g_timer_session = { 0 };
@@ -146,4 +156,12 @@ void timer_session_summary_g(void(*timer_session_summary_callback)(const char*, 
 void timer_session_print_g()
 {
 	timer_session_print(&g_timer_session);
+}
+uint64_t timer_session_get_total_ticks_g(void)
+{
+    return timer_session_get_total_ticks(&g_timer_session);
+}
+uint64_t timer_session_get_frequency_g(void)
+{
+    return timer_session_get_frequency(&g_timer_session);
 }
