@@ -3,6 +3,10 @@
 #include <stdint.h>
 #include "hash_map.h"
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
+#define alloca _alloca
+#endif
+
 struct HashMapBucket
 {
 	unsigned int  *key_sizes;
