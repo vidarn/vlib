@@ -13,6 +13,8 @@ uint32_t hash_murmur3_32(const uint8_t* key, size_t key_size, uint32_t seed)
 // You want num_buckets to be ~ 1.5*the number of entries 
 struct HashMap *hash_map_create(int num_buckets)
 ;
+struct HashMap* hash_map_clone(struct HashMap* src)
+;
 void hash_map_free(struct HashMap* hash_map)
 ;
 void hash_map_insert(struct HashMap *hash_map, void *key, unsigned int key_size, void *value, unsigned int value_size)

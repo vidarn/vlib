@@ -85,6 +85,33 @@ struct HashMap *hash_map_create(int num_buckets)
 	hash_map->buckets = calloc(num_buckets, sizeof(struct HashMapBucket));
 	return hash_map;
 }
+struct HashMap *hash_map_clone(struct HashMap* src)
+{
+	struct HashMap *hash_map = calloc(1, sizeof(struct HashMap));
+	hash_map->num_buckets = src->num_buckets;
+	hash_map->num_keys = src->num_keys;
+	hash_map->buckets = calloc(src->num_buckets, sizeof(struct HashMapBucket));
+	for (int i = 0; i < src->num_buckets; i++) {
+		struct HashMapBucket *src_bucket = src->buckets + i;
+		struct HashMapBucket *bucket = hash_map->buckets + i;
+		*bucket = *src_bucket;
+		if (src_bucket->alloc > 0) {
+			bucket->keys = calloc(1, src_bucket->key_alloc);
+			memcpy(bucket->keys, src_bucket->keys, src_bucket->key_alloc);
+
+			bucket->values = calloc(1, src_bucket->value_alloc);
+			memcpy(bucket->values, src_bucket->values, src_bucket->value_alloc);
+
+			bucket->key_sizes = calloc(src_bucket->alloc, sizeof(unsigned int));
+			memcpy(bucket->key_sizes, src_bucket->key_sizes, sizeof(unsigned int) * src_bucket->alloc);
+			
+			bucket->value_sizes = calloc(src_bucket->alloc, sizeof(unsigned int));
+
+			memcpy(bucket->value_sizes, src_bucket->value_sizes, sizeof(unsigned int) * src_bucket->alloc);
+		}
+	}
+	return hash_map;
+}
 void hash_map_free(struct HashMap* hash_map)
 {
 	int num_buckets = hash_map->num_buckets;
