@@ -282,15 +282,6 @@ void hash_map_clear(struct HashMap *hash_map)
 int hash_map_num_keys(struct HashMap* hash_map)
 {
 	return hash_map->num_keys;
-	/*
-	int num = 0;
-	for (int i_bucket = 0; i_bucket < hash_map->num_buckets; i_bucket++)
-	{
-		struct HashMapBucket* bucket = hash_map->buckets + i_bucket;
-		num += bucket->num;
-	}
-	return num;
-	*/
 }
 
 void hash_map_resize(struct HashMap* hash_map, int num_buckets)
