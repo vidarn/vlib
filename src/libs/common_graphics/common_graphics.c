@@ -183,3 +183,33 @@ void hsl_to_rgb(float* rgb, const float* hsl) {
 	rgb[2] = max(hue_to_rgb(v1, v2, h - 1.f/3.f), 0.f);
 }
 
+// See https://www.image-engineering.de/library/technotes/958-how-to-convert-between-srgb-and-ciexyz
+void linear_srgb_to_xyz(float* xyz, const float* linear_srgb)
+{
+	xyz[0] = 0.412456 * linear_srgb[0] + 0.3575761 * linear_srgb[1] + 0.1804375 * linear_srgb[2];
+	xyz[1] = 0.212673 * linear_srgb[0] + 0.7151522 * linear_srgb[1] + 0.0721750 * linear_srgb[2];
+	xyz[2] = 0.019334 * linear_srgb[0] + 0.1191920 * linear_srgb[1] + 0.9503041 * linear_srgb[2];
+}
+
+// See https://easyrgb.com/en/math.php
+void xyz_to_yxy(float *yxy, float* xyz)
+{
+	yxy[0] = xyz[1];
+	float d = 1.f/(xyz[0] + xyz[1] + xyz[2]);
+	yxy[1] = xyz[0]*d;
+	yxy[2] = xyz[1]*d;
+}
+
+// See https://www.waveformlighting.com/tech/calculate-color-temperature-cct-from-cie-1931-xy-coordinates
+float yxy_to_cct(float* yxy)
+{
+	double n = (yxy[1]-0.3320)/(0.1858-yxy[2]);
+	double n2 = n * n;
+	return 437.0 * n *n2 + 3601.0 * n2 + 6861.0 * n + 5517.0;
+	//return 449.0 * n *n2 + 3525.0 * n2 + 6823.3 * n + 5520.33; <- These values are from wikipedia
+	/* This is the "better" formula according to wikipedia, but it looked very similar to me
+	double n = (yxy[1]-0.3366)/(yxy[2] -0.1735);
+	float temp = -949.86315 + 6253.80338 * exp(-n / 0.92159) + 28.70599 * exp(-n / 0.20039) + 0.00004 * exp(-n / 0.07125);
+	return temp;
+	*/
+}
