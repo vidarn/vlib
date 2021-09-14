@@ -132,7 +132,7 @@ void hash_map_free(struct HashMap* hash_map)
 	free(hash_map);
 }
 
-void hash_map_insert(struct HashMap *hash_map, void *key, unsigned int key_size, void *value, unsigned int value_size)
+void *hash_map_insert(struct HashMap *hash_map, void *key, unsigned int key_size, void *value, unsigned int value_size)
 {
 	unsigned long hash = hash_djb2(key, key_size);
 	unsigned int bucket_i = hash % hash_map->num_buckets;
@@ -162,15 +162,16 @@ void hash_map_insert(struct HashMap *hash_map, void *key, unsigned int key_size,
 	}
 	memcpy(bucket->values + value_offset, value, value_size);
 	hash_map->num_keys++;
+	return bucket->values + value_offset;
 }
 
-void hash_map_insert_and_grow(struct HashMap* hash_map, void* key, unsigned int key_size, void* value, unsigned int value_size)
+void *hash_map_insert_and_grow(struct HashMap* hash_map, void* key, unsigned int key_size, void* value, unsigned int value_size)
 {
 	int num_keys = hash_map->num_keys;
 	if (hash_map->num_buckets <= hash_map->num_keys) {
 		hash_map_resize(hash_map, hash_map->num_buckets * 2);
 	}
-	hash_map_insert(hash_map, key, key_size, value, value_size);
+	return hash_map_insert(hash_map, key, key_size, value, value_size);
 }
 
 void *hash_map_find(struct HashMap *hash_map, void *key, unsigned int key_size, unsigned int *value_size_out)
@@ -282,6 +283,11 @@ void hash_map_clear(struct HashMap *hash_map)
 int hash_map_num_keys(struct HashMap* hash_map)
 {
 	return hash_map->num_keys;
+}
+
+int hash_map_num_buckets(struct HashMap* hash_map)
+{
+	return hash_map->num_buckets;
 }
 
 void hash_map_resize(struct HashMap* hash_map, int num_buckets)

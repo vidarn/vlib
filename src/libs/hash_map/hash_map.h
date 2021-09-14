@@ -17,9 +17,9 @@ struct HashMap* hash_map_clone(struct HashMap* src)
 ;
 void hash_map_free(struct HashMap* hash_map)
 ;
-void hash_map_insert(struct HashMap *hash_map, void *key, unsigned int key_size, void *value, unsigned int value_size)
+void *hash_map_insert(struct HashMap *hash_map, void *key, unsigned int key_size, void *value, unsigned int value_size)
 ;
-void hash_map_insert_and_grow(struct HashMap *hash_map, void *key, unsigned int key_size, void *value, unsigned int value_size)
+void *hash_map_insert_and_grow(struct HashMap *hash_map, void *key, unsigned int key_size, void *value, unsigned int value_size)
 ;
 void *hash_map_find(struct HashMap *hash_map, void *key, unsigned int key_size, unsigned int *value_size_out)
 ;
@@ -28,6 +28,8 @@ int hash_map_remove(struct HashMap *hash_map, void *key, unsigned int key_size)
 void hash_map_clear(struct HashMap *hash_map)
 ;
 int hash_map_num_keys(struct HashMap *hash_map)
+;
+int hash_map_num_buckets(struct HashMap* hash_map)
 ;
 void hash_map_resize(struct HashMap* hash_map, int num_buckets)
 ;
