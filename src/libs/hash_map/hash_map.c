@@ -33,7 +33,7 @@ struct HashMapIterator
 };
 
 //NOTE(Vidar):From here: http://www.cse.yorku.ca/~oz/hash.html
-unsigned long hash_djb2(unsigned char *key, unsigned int key_size)
+static unsigned long _hash_djb2(unsigned char *key, unsigned int key_size)
 {
 	unsigned long hash = 5381;
 	for(unsigned int i=0;i<key_size;i++){
@@ -134,7 +134,7 @@ void hash_map_free(struct HashMap* hash_map)
 
 void *hash_map_insert(struct HashMap *hash_map, void *key, unsigned int key_size, void *value, unsigned int value_size)
 {
-	unsigned long hash = hash_djb2(key, key_size);
+	unsigned long hash = _hash_djb2(key, key_size);
 	unsigned int bucket_i = hash % hash_map->num_buckets;
 	struct HashMapBucket *bucket = hash_map->buckets + bucket_i;
 	int index = bucket->num++;
@@ -176,7 +176,7 @@ void *hash_map_insert_and_grow(struct HashMap* hash_map, void* key, unsigned int
 
 void *hash_map_find(struct HashMap *hash_map, void *key, unsigned int key_size, unsigned int *value_size_out)
 {
-	unsigned long hash = hash_djb2(key, key_size);
+	unsigned long hash = _hash_djb2(key, key_size);
 	unsigned int bucket_i = hash % hash_map->num_buckets;
 	struct HashMapBucket *bucket = hash_map->buckets + bucket_i;
 	int num_entries = bucket->num;
@@ -242,7 +242,7 @@ static int _hash_map_bucket_remove_entry(struct HashMapBucket* bucket, int entry
 
 int hash_map_remove(struct HashMap *hash_map, void *key, unsigned int key_size)
 {
-	unsigned long hash = hash_djb2(key, key_size);
+	unsigned long hash = _hash_djb2(key, key_size);
 	unsigned int bucket_i = hash % hash_map->num_buckets;
 	struct HashMapBucket *bucket = hash_map->buckets + bucket_i;
 	int num_entries = bucket->num;
