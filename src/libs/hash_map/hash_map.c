@@ -364,6 +364,12 @@ int hash_map_iterator_next(struct HashMapIterator *hash_map_iterator, void **key
 	return 1;
 }
 
+void hash_map_iterator_reset(struct HashMapIterator* hash_map_iterator)
+{
+	hash_map_iterator->next_bucket = 0;
+	hash_map_iterator->next_bucket_entry = 0;
+}
+
 void hash_map_iterator_remove_current(struct HashMapIterator* hash_map_iterator)
 {
 	int remove_bucket;

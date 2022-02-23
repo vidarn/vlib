@@ -35,6 +35,8 @@ struct HashMapIterator *hash_map_iterator_create(struct HashMap *hash_map)
 int hash_map_iterator_next(struct HashMapIterator *hash_map_iterator, void **key_out, int *key_size_out, 
 	void **value_out, int *value_size_out)
 ;
+void hash_map_iterator_reset(struct HashMapIterator* hash_map_iterator)
+;
 void hash_map_iterator_remove_current(struct HashMapIterator* hash_map_iterator)
 ;
 void hash_map_iterator_free(struct HashMapIterator *hash_map_iterator)
