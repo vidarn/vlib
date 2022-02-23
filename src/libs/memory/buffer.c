@@ -37,6 +37,7 @@ void buffer_add(void *ptr, size_t len, struct Buffer *buffer)
 {
 	int resize = 0;
 	while (buffer->alloc < len + buffer->len) {
+		if (buffer->alloc == 0) buffer->alloc = 32;
 		buffer->alloc <<= 1;
 		resize = 1;
 	}
@@ -77,3 +78,44 @@ size_t buffer_len(struct Buffer *buffer)
 	return buffer->len;
 }
 
+size_t buffer_num(struct Buffer *buffer, size_t elem_size)
+{
+	return buffer->len/elem_size;
+}
+
+struct BufferSized
+{
+	unsigned char *mem;
+	size_t len, alloc;
+	size_t elem_size;
+};
+
+struct BufferSized *buffer_s_create(size_t initial_count, size_t elem_size)
+{
+	struct BufferSized *buffer = calloc(1, sizeof(struct BufferSized));
+	buffer->alloc = initial_count * elem_size;
+	buffer->mem = calloc(1, buffer->alloc);
+	buffer->elem_size = elem_size;
+	return buffer;
+}
+
+void* buffer_s_get(struct BufferSized* buffer)
+{
+	return buffer_get(buffer->elem_size, buffer);
+}
+
+void buffer_s_add(void* ptr, struct BufferSized* buffer)
+{
+	//BOOKMARK: Why does this corrupt the memory when reallocating??
+	buffer_add(ptr, buffer->elem_size, buffer);
+}
+
+void* buffer_s_elem(int i, struct BufferSized* buffer)
+{
+	return buffer->mem + i * buffer->elem_size;
+}
+
+size_t buffer_s_num(struct BufferSized *buffer)
+{
+	return buffer->len/buffer->elem_size;
+}
