@@ -11,7 +11,11 @@ void *buffer_hand_over_memory(struct Buffer *buffer)
 ;
 void buffer_reset(struct Buffer *buffer)
 ;
-void buffer_add(void *ptr, size_t len, struct Buffer *buffer)
+void buffer_add(const void *ptr, size_t len, struct Buffer *buffer)
+;
+void buffer_add_str(const char *str, struct Buffer *buffer)
+;
+void buffer_add_str_va(struct Buffer *buffer, ...)
 ;
 void buffer_shrink(size_t len, struct Buffer *buffer)
 ;

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
 struct Buffer
 {
@@ -33,7 +34,7 @@ void buffer_reset(struct Buffer *buffer)
 	buffer->len = 0;
 }
 
-void buffer_add(void *ptr, size_t len, struct Buffer *buffer)
+void buffer_add(const void *ptr, size_t len, struct Buffer *buffer)
 {
 	int resize = 0;
 	while (buffer->alloc < len + buffer->len) {
@@ -47,6 +48,28 @@ void buffer_add(void *ptr, size_t len, struct Buffer *buffer)
 	memcpy(buffer->mem + buffer->len, ptr, len);
 	buffer->len += len;
 }
+
+void buffer_add_str(const char *str, struct Buffer *buffer)
+{
+    while(buffer->len > 0 && buffer->mem[buffer->len-1] == 0){
+        buffer->len--;
+    }
+    buffer_add(str, strlen(str)+1, buffer);
+}
+
+void buffer_add_str_va(struct Buffer *buffer, ...)
+{
+    va_list va;
+    va_start(va, buffer);
+    int i=0;
+    char *c;
+    do{
+        c = va_arg(va, char*);
+        if(c) buffer_add_str(c, buffer);
+    }while(c);
+    va_end(va);
+}
+
 
 void buffer_shrink(size_t len, struct Buffer *buffer)
 {
@@ -101,13 +124,12 @@ struct BufferSized *buffer_s_create(size_t initial_count, size_t elem_size)
 
 void* buffer_s_get(struct BufferSized* buffer)
 {
-	return buffer_get(buffer->elem_size, buffer);
+	return buffer_get(buffer->elem_size, (struct Buffer*)buffer);
 }
 
 void buffer_s_add(void* ptr, struct BufferSized* buffer)
 {
-	//BOOKMARK: Why does this corrupt the memory when reallocating??
-	buffer_add(ptr, buffer->elem_size, buffer);
+	buffer_add(ptr, buffer->elem_size, (struct Buffer*)buffer);
 }
 
 void* buffer_s_elem(int i, struct BufferSized* buffer)
